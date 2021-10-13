@@ -1,0 +1,32 @@
+version: '3'
+ 
+services:
+    db:
+        build:
+           context: .
+        # restart: always           
+        environment:
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: hiro_db
+            POSTGRES_PORT_5432_TCP_PORT: 5432
+        ports:
+            #- "5432:5432"
+            - "15432:5432"            
+        volumes:
+            - ./hiro_db:/hiro_db
+            - db-data:/var/lib/postgresql/data
+    osm2pgsql:
+        image: openfirmware/osm2pgsql:latest
+        # restart: always        
+        #links:
+        #    - "postgis:pg"
+        environment:
+            PG_PORT_5432_TCP_ADDR: postgis
+            PG_PORT_5432_TCP_PORT: 5432
+            PG_ENV_OSM_DB: hiro_db
+            PG_ENV_OSM_USER: postgres
+            PG_ENV_POSTGRES_PASSWORD: password
+        volumes:
+            - ./hiro_db:/hiro_db     
+volumes:
+    db-data:
